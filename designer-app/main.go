@@ -66,12 +66,20 @@ func main() {
 	actions.Init(db)
 	if !isTableExists(db, &Model{ID: "0"}) {
 		onError(actions.CreateTable(db, &Model{}))
-		args := actions.ActionArgs{body: &Model{ID: "0"}}
-		onError(actions.Create(db, &Model{ID: "0", Title: "App"}))
+		action := actions.NewAction("create", "model")
+		args := actions.ActionArgs{Body: &Model{ID: "0", Title: "App"}}
+		action.SetArgs(&args)
+		_, err = action.Call()
+		onError(err)
 	}
 	if !isTableExists(db, &Field{ID: "0"}) {
 		onError(actions.CreateTable(db, &Field{}))
+		action := actions.NewAction("create", "field")
+		args := actions.ActionArgs{Body: &Field{ID: "0", Title: "version"}}
+		action.SetArgs(&args)
+		_, err = action.Call()
+		onError(err)
 	}
 	http.HandleFunc("/action", actions.HandleAction)
-	onError(http.ListenAndServe(":"+*portFlag, http.FileServer(http.Dir("./webapp/build"))))
+	onError(http.ListenAndServe(":"+*portFlag, http.FileServer(http.Dir("./elm-app/dist"))))
 }
