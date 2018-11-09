@@ -2,14 +2,17 @@ package actions
 
 import (
 	"fmt"
+	"reflect"
 
 	"github.com/go-pg/pg"
 )
 
 // Select create an entry in the db
-func Select(db *pg.DB, model interface{}, args *ActionArgs) *Result {
+func Select(db *pg.DB, model reflect.Type, args *ActionArgs) *Result {
 	fmt.Println("call actions.Select !!", model, args)
-	err := db.Select(args.Body)
+	data := reflect.ValueOf(reflect.New(model))
+	err := db.Model(model).Select()
+	fmt.Println("db.Select(data) ", data)
 	return &Result{
 		err: err,
 	}

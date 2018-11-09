@@ -61,8 +61,10 @@ func main() {
 		// _, err = action.Call()
 		// onError(err)
 	}
-
+	models.InjectDB(db)
 	http.HandleFunc("/api/actions", actions.HandleAction)
+	http.HandleFunc("/api/models", models.HandleModels)
+	http.HandleFunc("/api/fields", models.HandleFields)
 	http.Handle("/", http.FileServer(http.Dir("./elm-app/dist")))
 	onError(http.ListenAndServe(":"+*portFlag, nil))
 }
